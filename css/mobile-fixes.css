@@ -1,0 +1,236 @@
+/* ═══════════════════════════════════════════════════
+   MOBILE FIXES — июнь 2026
+   Точечные правки мобильной адаптации (≤768px).
+   Загружается ПОСЛЕ styles.css, поэтому переопределяет его.
+   Здесь живут ТОЛЬКО правки spacing/контейнеров/layout
+   (кейсы, процесс, модалки, legal-заголовки, глобальные отступы).
+   Hero, карту, график, 3 расширяющихся блока трогает другой файл.
+   ═══════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #4 — Глобально уменьшить вертикальные отступы ~вдвое
+   База (styles.css @640px): секции padding: clamp(56px,8vh,80px) 16px.
+   На телефоне ~67px сверху/снизу — режем примерно вдвое.
+   Горизонтальный padding (16px) НЕ трогаем, только вертикаль.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .section-wrap,
+  .forwhom,
+  .catalog,
+  .economy,
+  .process,
+  .calc,
+  .cases,
+  .trust,
+  .faq {
+    padding-top: clamp(28px, 4.5vh, 44px);
+    padding-bottom: clamp(28px, 4.5vh, 44px);
+  }
+
+  /* Заголовки секций: поджать нижний отступ перед контентом */
+  .process__header { margin-bottom: clamp(22px, 3vh, 40px); }
+}
+
+/* ─── КАТАЛОГ: поджать вертикальные промежутки ─────── */
+@media (max-width: 768px) {
+  /* перед плашкой/заголовком ← между лидом и табами */
+  .catalog__header { margin-bottom: clamp(18px, 2.5vh, 28px); }
+  /* между табами и слайдером моделей */
+  .catalog__tabs { margin-bottom: clamp(16px, 2.5vh, 28px); }
+  /* обёртка слайдера — среднее между прежним (26/32) и впритык (4/6) */
+  .catalog__rail-wrap { padding-top: 14px !important; padding-bottom: 16px !important; }
+  /* между слайдером и подвалом (кнопка PDF + стрелки) */
+  .catalog__foot { margin-top: 10px; }
+  /* между кнопкой «Скачать каталог PDF» и следующей секцией */
+  .catalog { padding-bottom: clamp(28px, 4vh, 48px); }
+}
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #7 — Кейсы: 3 статы-плашки в одну строку
+   Контейнер: .places__caption-specs (карусель «places»,
+   проект «8 трасс на опорах · Магнитогорск»).
+   В styles.css @640px уже 3 в ряд (flex 33.333%), но @420px
+   ломается на 2+1 (flex 50%), а desc обрезается line-clamp:3.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 560px) {
+  /* держим ровно 3 равные колонки на любом узком экране */
+  .places__caption-specs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .places__caption-specs span {
+    flex: none;            /* перебиваем flex:1 0 50% из @420px */
+    min-width: 0;
+    padding: 6px 6px 7px;
+    border-radius: 9px;
+    align-items: flex-start;
+  }
+  .places__caption-specs b { font-size: 13px; }
+  .places__caption-specs i {
+    font-size: 8px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  /* описание проекта читается целиком — снимаем обрезку */
+  .places__caption-desc {
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    display: block;
+    overflow: visible;
+    max-height: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #8 — Процесс: чип срока под текст, а не под цифрой
+   Сетка @720px: grid-template-columns 68px 1fr; чип сейчас
+   grid-column 1/-1 + justify-self:start → прижат к левому краю
+   под цифрой. Переносим чип в колонку контента (col 2).
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .process__row-time {
+    grid-column: 2;        /* колонка текста, а не на всю ширину */
+    justify-self: start;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #10 — Модалка каталога (.model) съехала вправо
+   Причина: .model__cta — flex-ребёнок колонки (stretch по
+   ширине) + горизонтальный margin 22px (styles.css @900px),
+   из-за чего блок вылезает за правый край. Body уже даёт
+   симметричный padding 22px — лишний горизонтальный margin убираем.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .model__cta {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  /* страховка симметрии: лист по центру, без перекоса */
+  .model__sheet {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  /* контент колонок не должен распирать вправо */
+  .model__left,
+  .model__right { min-width: 0; }
+  .model__body { min-width: 0; }
+}
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #11 — Legal-заголовки уменьшить (~10%)
+   .legal__title в legal.css: font-size clamp(2.4rem,5vw,4.6rem)
+   — на телефоне срабатывает min 2.4rem, длинные слова режутся.
+   ВАЖНО: legal.css линкуется ПОСЛЕ mobile-fixes.css на
+   privacy/agreement, поэтому повышаем специфичность (body …),
+   чтобы перебить базовое правило.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  body .legal__title {
+    font-size: clamp(2.05rem, 8.4vw, 3.4rem);
+    letter-spacing: -0.04em;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+}
+@media (max-width: 390px) {
+  body .legal__title {
+    font-size: 1.95rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #4b — РАСШИРЕННОЕ поджатие вертикали (то, что первый
+   проход пропустил и из-за чего «дыры» остались).
+   Реальные секции страницы (index.html): hero, intro, forwhom,
+   catalog, fl (калькулятор), cases, places (портфолио),
+   voices (отзывы), trust, contact. В первом проходе НЕ были
+   тронуты: .intro, .fl, .places, .voices, .contact + margin-bottom
+   ЗАГОЛОВКОВ секций (44–80px) — главный источник пустот.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ПРИМ.: padding всех секций (вкл. .fl/.places) теперь режется в styles.css
+     в блоке MOBILE CONSOLIDATED (22px !important). Здесь — только внутренние
+     отступы интро и margin-bottom заголовков секций. */
+
+  /* Интро: большие внутренние отступы вокруг «С 2011 строим…» и статистики */
+  .intro__text {
+    margin-top: clamp(14px, 2.5vh, 26px) !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* margin-bottom заголовков секций — режем ~вдвое (база 44–80px) */
+  .forwhom__header,
+  .economy__header,
+  .process__header,
+  .calc__header,
+  .trust__header,
+  .finlab__header,
+  .fl3__header,
+  .cases__header,
+  .places__header,
+  .voices__header {
+    margin-bottom: clamp(18px, 2.8vh, 34px) !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   ЗАДАЧА #4c — поджатие всплывающих блоков (reveal-card) +
+   портфолио (places). Значения с твоих правок в DevTools.
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* reveal-card (всплывающие фоновые блоки calc/решения/форма/карта):
+     убрать боковые гуттеры + резко поджать вертикальные отступы (было до 40px) */
+  .reveal-card {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-top: clamp(18px, 5vw, 34px) !important;
+    margin-bottom: clamp(18px, 5vw, 34px) !important;
+  }
+  /* портфолио — среднее, не впритык */
+  /* без своего горизонтального паддинга — иначе портфолио уже остальных секций
+     (двойной отступ: паддинг секции + свой). Горизонталь даёт только сама .places. */
+  .places__header { padding: 16px 0 6px !important; }
+  .places__grid { padding: 0 0 16px !important; }
+}
+
+/* ═══════════════════════════════════════════════════
+   СКРУГЛЕНИЯ −25% на телефоне (кнопки/пиллы НЕ трогаем —
+   у них радиус 50/99/100/999px, остаются капсулами).
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* переменные радиусов (≈21 использование по сайту) */
+  :root {
+    --radius-sm: 9px;    /* было 12 */
+    --radius-md: 12px;   /* было 16 */
+    --radius-lg: 18px;   /* было 24 */
+  }
+
+  /* всплывающие фоновые блоки — менее круглые (было 22px) */
+  .reveal-card > *,
+  .reveal-card[data-reveal-has-map] > * { border-radius: 16px !important; }
+  .reveal-card[data-reveal-has-map] { --rc-radius: 16 !important; }
+
+  /* крупные литеральные радиусы карточек/блоков (18–22px) → 14–16px */
+  .hero__live,
+  .contact__form,
+  .about__block--cta .about__block-body,
+  .forwhom__canvas-sticky,
+  .cases__preview,
+  .places__stage,
+  .model__cta,
+  .finlab__kpi,
+  .finlab__chart,
+  .finlab__timeline,
+  .fl3__hero-preview,
+  .cookie-consent { border-radius: 14px !important; }
+
+  .hero__chapter-plate,
+  .finlab__inputs { border-radius: 16px !important; }
+
+  /* большие модалки-листы (было 28px) */
+  .about__sheet,
+  .model__sheet,
+  .qmodal__sheet { border-radius: 18px !important; }
+}
