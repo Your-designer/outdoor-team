@@ -4000,31 +4000,7 @@ document.addEventListener('rpark:langchange', () => { try { rerender(); } catch(
   });
 })();
 </script>
-<!-- ===== amoCRM lead capture (Surf'n'Code, 2026-06-30) — direct queue/add ===== -->
-<script>
-(function(){
-  var FORM_ID="1727686", HASH="2814b44ffcf43270e602a87be1d4d360";
-  function sink(){var s=document.getElementById('amo_sink');if(!s){s=document.createElement('iframe');s.name='amo_sink';s.id='amo_sink';s.style.display='none';document.body.appendChild(s);}return s;}
-  window.sendAmoLead=function(d){
-    try{
-      sink();
-      var f=document.createElement('form');
-      f.method='POST';f.action='https://forms.amocrm.ru/queue/add';f.target='amo_sink';f.acceptCharset='UTF-8';f.style.display='none';
-      function add(n,v){var i=document.createElement('input');i.type='hidden';i.name=n;i.value=(v==null?'':String(v));f.appendChild(i);}
-      add('form_id',FORM_ID);
-      add('hash',HASH);
-      add('fields[name_1]',d.name);
-      add('fields[358918_1][826086]',d.phone);
-      add('fields[note_2]',d.note||'');
-      add('user_origin',JSON.stringify({datetime:new Date().toString(),timezone:'Europe/Moscow',referer:location.href}));
-      document.body.appendChild(f);
-      f.submit();
-      setTimeout(function(){try{f.remove();}catch(e){}},2000);
-      return true;
-    }catch(e){return false;}
-  };
-})();
-</script>
+
 
 
 </body></html>
